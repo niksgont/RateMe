@@ -1,0 +1,29 @@
+{% for category in categories %}
+    <div>
+        <h2>{{category.name}}</h2>
+        <h2>Reviews:</h2>
+        <ul>
+        {% for review in category.reviews.all %}
+            <li>
+                <p>Text: {{ review.review_text }}</p>
+                <p>Rate: {{ review.rate }}</p>
+                <p>Published: {{ review.pub_date }}</p>
+
+                <h3>Rates:</h3>
+                <ul>
+                {% for rate in review.rates.all %}
+                    <li>
+                        <p>Rate field: {{ rate.rate_field }}</p>
+                        <p>Votes: {{ rate.votes }}</p>
+                    </li>
+                {% empty %}
+                    <li>No rates for this review.</li>
+                {% endfor %}
+                </ul>
+            </li>
+        {% empty %}
+            <li>No reviews for this category.</li>
+        {% endfor %}
+        </ul>
+    </div>
+{% endfor %}
