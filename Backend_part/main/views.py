@@ -6,8 +6,26 @@ from django.http import JsonResponse, HttpResponse
 import json
 from django.core import serializers
 
+from rest_framework import viewsets
+from main.models import Review, Category, Rate
+from main.serializers import ReviewSerializer, CategorySerializer, RateSerializer
+
 
 User = get_user_model()
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+class RateViewSet(viewsets.ModelViewSet):
+    queryset = Rate.objects.all()
+    serializer_class = RateSerializer
+
 
 def category_detail(request, category_id):
     category = get_object_or_404(Category, pk=category_id)
