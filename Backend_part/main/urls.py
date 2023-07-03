@@ -27,6 +27,7 @@ from django.urls import include, path, re_path
 from rest_framework.routers import DefaultRouter
 from .views import ReviewViewSet, CategoryViewSet, RateViewSet
 
+router = DefaultRouter()
 router.register(r'reviews', ReviewViewSet)
 router.register(r'categories', CategoryViewSet)
 router.register(r'rates', RateViewSet)
