@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
 from django.db import models
 
 def validate_range(value):
@@ -11,12 +12,14 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+
 class Review(models.Model):
     review_text = models.CharField(max_length=200)
     description = models.TextField()
     rate = models.IntegerField(default=0, validators=[validate_range])
     pub_date = models.DateTimeField("date published", auto_now_add=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='reviews')
+    creator = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.review_text

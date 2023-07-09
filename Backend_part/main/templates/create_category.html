@@ -1,6 +1,19 @@
-<h1>Create Category</h1>
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Submit</button>
-</form>
+{% block content %}
+    <div class="container">
+        <h2>Create a Category</h2>
+        <form method="POST" action="{% url 'create_category' %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Create</button>
+        </form>
+        <hr>
+        <p class="text-muted">Don't see the category you're looking for? Create a new one:</p>
+        <form method="POST" action="{% url 'create_category' %}">
+            {% csrf_token %}
+            <div class="input-group mb-3">
+                {{ form.name }}
+                <button type="submit" class="btn btn-outline-secondary">Add Category</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

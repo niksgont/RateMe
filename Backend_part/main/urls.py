@@ -16,9 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from .views import category_detail, all_categories, login_view, signup_view, create_review \
-    , get_categories, create_category
-
+from .views import *
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -45,11 +43,15 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    path('user/', user_page, name='user_page'),
+    path('review/<int:review_id>/', review_detail, name='review_detail'),
+    path('review/<int:review_id>/add_review/', add_review, name='add_review'),
     path('create_category/', create_category, name='create_category'),
     path('get_categories/', get_categories, name='get_categories'),
     path('create_review/', create_review, name='create_review'),
     path('login/', login_view, name='login'),
     path('signup/', signup_view, name='signup'),
+    path('signout/', signout_view, name='signout'),
     path('categories/', all_categories, name='categorys'),
     path('category/<int:category_id>/', category_detail, name='category_detail'),
     path("main/", include("main.urls")),
@@ -59,4 +61,5 @@ urlpatterns = [
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    path('', main_page, name='main_page'),
 ]

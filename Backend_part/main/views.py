@@ -1,7 +1,8 @@
-from django.contrib.auth import authenticate, login, get_user_model
+from django.contrib.auth import authenticate, login, get_user_model, logout
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Category
-from .forms import ReviewForm, CategoryForm
+from .forms import ReviewForm, CategoryForm, RateForm
 from django.http import JsonResponse, HttpResponse
 import json
 from django.core import serializers
@@ -13,6 +14,22 @@ from main.serializers import ReviewSerializer, CategorySerializer, RateSerialize
 
 User = get_user_model()
 
+def main_page(request):
+    # call all_categories
+    categories = Category.objects.all()
+
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.category, _ = Category.objects.get_or_create(name=form.cleaned_data['category'])
+            review.creator_id = request.user.id
+            form.save()
+            return redirect('main_page')
+    else:
+        form = ReviewForm()
+
+    return render(request, 'main_page.html', {'categories': categories, 'form': form, 'user': request.user})
 
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
@@ -43,7 +60,7 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('home')
+            return redirect('main_page')
         else:
             return render(request, 'login.html', {'error': 'Invalid username or password.'})
     else:
@@ -71,11 +88,17 @@ def signup_view(request):
     else:
         return render(request, 'signup.html')
     
+def signout_view(request):
+    logout(request)
+    return redirect('main_page')
+
+
 def create_review(request):
     if request.method == 'POST':
         form = ReviewForm(request.POST)
         if form.is_valid():
             review = form.save(commit=False)
+            review.creator_id = request.user.id
             review.category, _ = Category.objects.get_or_create(name=form.cleaned_data['category'])
             review.save()
             return redirect('categories')
@@ -83,27 +106,69 @@ def create_review(request):
         form = ReviewForm()
     return render(request, 'create_review.html', {'form': form})
 
-
 def get_categories(request):
     categories = serializers.serialize('json', Category.objects.all())
     return JsonResponse(categories, safe=False)
 
-def create_review(request):
+def create_rate(request):
     if request.method == 'POST':
-        form = ReviewForm(request.POST)
+        form = RateForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('categorys')  # Change 'categories' to 'categorys'
+            rate = form.save(commit=False)
+            rate.review, _ = Review.objects.get_or_create(name=form.cleaned_data['review'])
+            rate.save()
+            return redirect('categories')
     else:
-        form = ReviewForm()
-    return render(request, 'create_review.html', {'form': form})
+        form = RateForm()
+    return render(request, 'create_rate.html', {'form': form})
 
 def create_category(request):
     if request.method == 'POST':
         form = CategoryForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('categorys')  # or wherever you want to redirect after successful form submission
+            return redirect('categorys')
     else:
         form = CategoryForm()
-    return render(request, 'create_category.html', {'form': form})
+    return redirect(request, {'form': form})
+
+
+def review_detail(request, review_id):
+    review = get_object_or_404(Review, pk=review_id)
+
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            new_review = form.save(commit=False)
+            new_review.review_text = review.review_text
+            new_review.category = review.category
+            new_review.creator = request.user
+            new_review.save()
+            return redirect('review_detail', review_id=review_id)
+    else:
+        form = ReviewForm()
+
+    return render(request, 'review_detail.html', {'review': review, 'form': form})
+
+@login_required
+def user_page(request):
+    reviews = Review.objects.filter(creator=request.user)
+    return render(request, 'user_page.html', {'reviews': reviews})
+
+def add_review(request, review_id):
+    review = get_object_or_404(Review, pk=review_id)
+    
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            new_review = form.save(commit=False)
+            new_review.category = review.category
+            new_review.creator = request.user
+            new_review.name = review.name
+            new_review.save()
+            return redirect('review_detail', review_id=review.id)
+    else:
+        form = ReviewForm()
+    
+    return render(request, 'add_review.html', {'review': review, 'form': form})
+

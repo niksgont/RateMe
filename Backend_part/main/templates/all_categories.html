@@ -1,29 +1,31 @@
-{% for category in categories %}
-    <div>
-        <h2>{{category.name}}</h2>
-        <h2>Reviews:</h2>
-        <ul>
-        {% for review in category.reviews.all %}
-            <li>
-                <p>Text: {{ review.review_text }}</p>
-                <p>Rate: {{ review.rate }}</p>
-                <p>Published: {{ review.pub_date }}</p>
+{% extends "index.html" %}
 
-                <h3>Rates:</h3>
-                <ul>
-                {% for rate in review.rates.all %}
-                    <li>
-                        <p>Rate field: {{ rate.rate_field }}</p>
-                        <p>Votes: {{ rate.votes }}</p>
-                    </li>
+{% block content %}
+
+    {% for category in categories %}
+        <div class="card" style="width: 60%;">
+            <div class="card-body">
+                <h5 class="card-title">{{category.name}}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Reviews:</h6>
+                
+                <div class="d-flex flex-nowrap overflow-auto">
+                {% for review in category.reviews.all %}
+                    <div class="card" style="width: 18rem; flex-shrink: 0; margin-right: 15px;">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <p>Text: {{ review.review_text }}</p>
+                                <p>Rate: {{ review.rate }}</p>
+                                <p>Creator: {{ review.creator }}</p>
+                                <p>Published: {{ review.pub_date }}</p>
+                            </li>
+                        </ul>
+                    </div>
                 {% empty %}
-                    <li>No rates for this review.</li>
+                    <div>No reviews for this category.</div>
                 {% endfor %}
-                </ul>
-            </li>
-        {% empty %}
-            <li>No reviews for this category.</li>
-        {% endfor %}
-        </ul>
-    </div>
-{% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+{% endblock %}

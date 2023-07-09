@@ -1,0 +1,91 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                {% for category in categories %}
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ category.name }}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">Reviews:</h6>
+                            
+                            <div class="d-flex flex-nowrap overflow-auto">
+                                {% for review in category.reviews.all %}
+                                    <div class="card" style="width: 18rem; flex-shrink: 0; margin-right: 15px;">
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item">
+                                                <a href="{% url 'review_detail' review.id %}">
+                                                    <p>Text: {{ review.review_text }}</p>
+                                                    <p>Rate: {{ review.rate }}</p>
+                                                    <p>Creator: {{ review.creator }}</p>
+                                                    <p>Published: {{ review.pub_date }}</p>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                {% empty %}
+                                    <div>No reviews for this category.</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Add a Review</h5>
+                        {% if not user.is_authenticated %}
+                            <div class="alert alert-warning" role="alert">
+                                You need to be logged in to add a review.
+                            </div>
+                        {% endif %}
+                        {% if user.is_authenticated %}
+                            <form method="POST" action="{% url 'create_review' %}">
+                                {% csrf_token %}
+                                {{ form.as_p }}
+                                <p class="text-muted" id="text_before">Don't see the category you're looking for? Create a new one:</p>
+                                <a onclick="add_category()" id="but_before" href="{% url 'create_category' %}" class="btn btn-outline-secondary">Create Category</a>
+                                <div id="category-form-container"></div>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </for
+                            
+                            m>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function add_category() {
+            var container = document.getElementById("category-form-container");
+            var text_before = document.getElementById("text_before");
+            var but_before = document.getElementById("but_before");
+
+
+            var formHTML = `
+                <form method="POST" action="{% url 'create_category' %}">
+                    {% csrf_token %}
+                    <div class="input-group mb-3">
+                        <input type="text" name="name" value="new category">
+                        <button type="submit" class="btn btn-outline-secondary">Add Category</button>
+                    </div>
+                </form>
+            `;
+
+            // Set the form HTML to the container element
+            container.innerHTML = formHTML;
+
+            // Show the category folder
+            container.style.display = "block";
+            text_before.style.display = "none";
+            but_before.style.display = "none";
+        }
+    </script>
+
+{% endblock %}

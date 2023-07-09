@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+    <link href="../static/styles.css" rel="stylesheet" type="text/css">
+    <title>Bootstrap Example</title>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+  </head>
+  <body class="p-3 m-0 border-0 bd-example m-0 border-0 itim-font">
+    
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#71BF71" class="bi bi-check-circle" viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+            <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+          </svg>
+          RateMe
+        </a>
+        <div class="collapse navbar-collapse ms-5" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item mx-5">
+              <a class="nav-link active" aria-current="page" href="./categories">Reviews</a>
+            </li>
+            <li class="nav-item mx-5">
+              <a class="nav-link active" href="#">Help</a>
+            </li>
+            <li class="nav-item mx-5">
+              <a class="nav-link active" href="#">Authors</a>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0 ">
+            {% if not user.is_authenticated %}
+              <li class="nav-item mx-4 transparent-text">
+                <a class="nav-link" href="/login">Sign In</a>
+              </li>
+              <li class="nav-item ms-4 transparent-text">
+                <a class="nav-link" href="/signup">Sign Up</a>
+              </li>
+            {% else %}
+              <li class="nav-item mx-4 transparent-text">
+                <span class="nav-link">
+                  <a class="nav-link" href="{% url 'user_page' %}">Welcome, {{ user.username }}</a>
+                </span>
+              </li>
+              <li class="nav-item ms-4 transparent-text">
+                <a class="nav-link" href="/signout">Sign Out</a>
+              </li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+    
+    {% block content %}{% endblock %}
+
+    <!-- End Example Code -->
+  </body>
+</html>

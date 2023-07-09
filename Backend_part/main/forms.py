@@ -1,6 +1,11 @@
 from django import forms
 from .models import Review, Category
 
+class CategoryForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = ['name']
+
 class ReviewForm(forms.ModelForm):
     class Meta:
         model = Review
@@ -12,8 +17,6 @@ class ReviewForm(forms.ModelForm):
             'rate': forms.NumberInput(attrs={'class': 'form-control'}),
         }
 
-
-class CategoryForm(forms.ModelForm):
-    class Meta:
-        model = Category
-        fields = ['name']
+class RateForm(forms.Form):
+    review = forms.ModelChoiceField(queryset=Review.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
+    rate_field = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}))

@@ -1,0 +1,33 @@
+{% extends "index.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+      <div class="col">
+        <h1>Welcome, {{ request.user.username }}</h1>
+      </div>
+    </div>
+    
+    <div class="row">
+      {% for review in reviews %}
+        <div class="col-6">
+          <div class="card">
+            <div class="card-body">
+              <h3 class="card-title welcome-message">{{ review.review_text }}</h5>
+              <p class="card-text">Desctiption: {{ review.description }}</p>
+              <p class="card-text">Rate: {{ review.rate }}</p>
+              <p class="card-text">Category: {{ review.category }}</p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <style>
+    .welcome-message {
+      color: rgb(85, 85, 85);
+      font-style: italic;
+    }
+  </style>
+{% endblock %}
