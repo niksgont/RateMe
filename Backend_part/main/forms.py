@@ -36,12 +36,13 @@ class ReviewForm(forms.ModelForm):
     """
     class Meta:
         model = Review
-        fields = ['review_text', 'category', 'description', 'rate']
+        fields = ['review_text', 'category', 'description', 'rate', 'image']
         widgets = {
             'review_text': forms.TextInput(attrs={'class': 'form-control'}),
             'category': forms.Select(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control'}),
             'rate': forms.NumberInput(attrs={'class': 'form-control'}),
+            'image': forms.FileInput(attrs={'class': 'form-control-file'}),
         }
 
 class RateForm(forms.Form):

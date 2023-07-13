@@ -6,6 +6,7 @@ from .forms import ReviewForm, CategoryForm, RateForm
 from django.http import JsonResponse, HttpResponse
 import json
 from django.core import serializers
+from django.core.exceptions import ValidationError
 
 from rest_framework import viewsets
 from main.models import Review, Category, Rate
@@ -275,12 +276,15 @@ def create_review(request):
     HttpResponse: The HttpResponse object representing the HTTP response.
     """
     if request.method == 'POST':
-        form = ReviewForm(request.POST)
+        form = ReviewForm(request.POST, request.FILES)
         if form.is_valid():
-            review = form.save(commit=False)
-            review.creator_id = request.user.id
-            review.category, _ = Category.objects.get_or_create(name=form.cleaned_data['category'])
-            review.save()
+            form.instance.creator_id = request.user.id
+            form.instance.category, _ = Category.objects.get_or_create(name=form.cleaned_data['category'])
+            try:
+                form.instance.full_clean()
+            except ValidationError:
+                return render(request, 'create_review.html', {'form': form})
+            form.save()
             return redirect('categories')
     else:
         form = ReviewForm()

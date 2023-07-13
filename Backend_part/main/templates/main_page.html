@@ -19,9 +19,12 @@
                                             <li class="list-group-item">
                                                 <a href="{% url 'review_detail' review.id %}" class="no-underline-link" style="text-decoration: none; color: black;">
                                                     <p>Title: {{ review.review_text }}</p>
-                                                    <p>Rate: {{ review.rate }}</p>
+                                                    {% if review.image %}
+                                                        <img class="image-max-size" src="{{ review.image.url }}" alt="{{ review.review_text }}">
+                                                    {% endif %}
+                                                    <!-- <p>Rate: {{ review.rate }}</p>
                                                     <p>Creator: {{ review.creator }}</p>
-                                                    <p>Published: {{ review.pub_date }}</p>
+                                                    <p>Published: {{ review.pub_date }}</p> -->
                                                 </a>
                                             </li>
                                         </ul>
@@ -36,7 +39,8 @@
             </div>
             
             <div class="col-md-4">
-                <div class="card mb-4">
+                <button id="toggleFormButton" class="btn btn-secondary btn-block mb-4">Add Review</button>
+                <div id="reviewForm" class="card mb-4">
                     <div class="card-body">
                         <h5 class="card-title">Add a Review</h5>
                         {% if not user.is_authenticated %}
@@ -45,7 +49,7 @@
                             </div>
                         {% endif %}
                         {% if user.is_authenticated %}
-                        <form method="POST" action="{% url 'create_review' %}">
+                        <form method="POST" action="{% url 'create_review' %}" enctype="multipart/form-data">
                             {% csrf_token %}
                             <div class="form-group">
                                 <label for="{{ form.review_text.id_for_label }}" class="my-label">Review Text:</label>
@@ -59,6 +63,10 @@
                             <div class="form-group">
                                 <label for="{{ form.description.id_for_label }}" class="my-label">Description:</label>
                                 {{ form.description|attr:"class:form-control my-class"|attr:"placeholder:Enter description" }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.image.id_for_label }}" class="my-label">Image:</label>
+                                {{ form.image|attr:"class:form-control my-class"|attr:"style:max-width:200px; max-height:200px;" }}
                             </div>
                             <div class="form-group">
                                 <label for="{{ form.rate.id_for_label }}" class="my-label">Rate:</label>
@@ -78,24 +86,29 @@
 
     <script>
         function addCategory() {
-
             var html = '<div class="form-group mt-1" id="category-input">' +
                 '<input type="text" name="category" class="form-control my-class" placeholder="Enter category">' +
                 '</div>';
 
             if (!document.querySelector('#category-input')) {
                 var addCategoryButton = document.querySelector('.btn.btn-outline-secondary');
-
                 var newElement = document.createRange().createContextualFragment(html);
-
                 addCategoryButton.parentNode.insertBefore(newElement, addCategoryButton);
             }
-            
+
             var categoryName = document.querySelector('#category-input input').value;
 
             if (categoryName) {
                 $.post("/create_category/", { name: categoryName })
                     .done(function(data) {
+                        // Store form values
+                        var reviewText = document.querySelector('[name="review_text"]').value;
+                        var description = document.querySelector('[name="description"]').value;
+                        var rate = document.querySelector('[name="rate"]').value;
+                        sessionStorage.setItem('reviewText', reviewText);
+                        sessionStorage.setItem('description', description);
+                        sessionStorage.setItem('rate', rate);
+
                         // alert("Category created successfully!");
                         location.reload();
                     })
@@ -103,11 +116,41 @@
                         alert("An error occurred: " + error);
                     });
             }
+        }
+        
+        window.onload = function() {
+            var reviewText = sessionStorage.getItem('reviewText');
+            var description = sessionStorage.getItem('description');
+            var rate = sessionStorage.getItem('rate');
 
-            
+            if (reviewText) {
+                document.querySelector('[name="review_text"]').value = reviewText;
+                sessionStorage.removeItem('reviewText'); // Clear the value from storage
+            }
+            if (description) {
+                document.querySelector('[name="description"]').value = description;
+                sessionStorage.removeItem('description'); // Clear the value from storage
+            }
+            if (rate) {
+                document.querySelector('[name="rate"]').value = rate;
+                sessionStorage.removeItem('rate'); // Clear the value from storage
+            }
         }
 
+        document.getElementById('toggleFormButton').onclick = function() {
+            var form = document.getElementById('reviewForm');
+            if (form.style.display === 'none') {
+                form.style.display = 'block';
+            } else {
+                form.style.display = 'none';
+            }
+        };
+
+        $(document).ready(function() {
+            var listItemWidth = $('.list-group-item').width();
+            $('.image-max-size').width(listItemWidth);
+        });
+
     </script>
-    
 
 {% endblock %}

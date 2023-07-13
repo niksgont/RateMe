@@ -1,4 +1,7 @@
 {% extends "index.html" %}
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
 
 {% block content %}
 
@@ -8,10 +11,22 @@
                 <div class="review-text">{{ review.review_text }}</div>
                 <div class="description"><strong>Description: </strong>{{ review.description }}</div>
                 <div class="mt-3">
-                <strong>Rate: </strong>{{ review.rate }}
+                    <strong>Rate: </strong>{{ review.rate }}
                 </div>
                 <div class="mt-3">
-                <strong>Category: </strong>{{ review.category.name }}
+                    <strong>Category: </strong>{{ review.category.name }}
+                </div>
+                <div class="mt-3">
+                    <strong>Creator: </strong>{{ review.creator.username }}
+                </div>
+                <!-- add image -->
+                <div class="mt-3">
+                    <strong>Image: </strong>
+                    {% if review.image %}
+                        <img src="{{ review.image.url }}" alt="Review Image">
+                    {% else %}
+                        <p>No image available</p>
+                    {% endif %}
                 </div>
             </div>
         </div>

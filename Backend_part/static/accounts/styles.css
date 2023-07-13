@@ -8,3 +8,7 @@
 .transparent-text {
     color: rgba(0, 0, 0, 0.43);
 }
+.image-max-size {
+    max-width: 200px;
+    max-height: 200px;
+}

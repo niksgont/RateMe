@@ -42,6 +42,7 @@ class Review(models.Model):
     pub_date (DateTimeField): The date and time when the review was published. This field is automatically set when the review is created.
     category (ForeignKey): A reference to the category that the review belongs to. If the category is deleted, the review is also deleted.
     creator (ForeignKey): A reference to the User who created the review. If the user is deleted, the 'creator' field is set to NULL.
+    image (ImageField): An image that is associated with the review. This field is optional.
 
     Methods:
     __str__: Returns a string representation of the Review object, which is its review_text.
@@ -52,6 +53,7 @@ class Review(models.Model):
     pub_date = models.DateTimeField("date published", auto_now_add=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='reviews')
     creator = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    image = models.ImageField(upload_to='reviews/', null=True, blank=True)
 
     def __str__(self):
         return self.review_text

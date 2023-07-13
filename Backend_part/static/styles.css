@@ -17,3 +17,8 @@
     text-decoration: none;
     background-color: transparent;
 }
+
+.btn-block {
+    display: block;
+    width: 100%;
+}
