@@ -1,9 +1,10 @@
 {% extends "index.html" %}
+{% load widget_tweaks %}
 
 {% block content %}
 
-    <div class="container">
-        <div class="row">
+    <!-- <div class="container">
+        <div class="row"> -->
             <div class="col-md-8">
                 {% for category in categories %}
                     <div class="card mb-4">
@@ -16,8 +17,8 @@
                                     <div class="card" style="width: 18rem; flex-shrink: 0; margin-right: 15px;">
                                         <ul class="list-group list-group-flush">
                                             <li class="list-group-item">
-                                                <a href="{% url 'review_detail' review.id %}">
-                                                    <p>Text: {{ review.review_text }}</p>
+                                                <a href="{% url 'review_detail' review.id %}" class="no-underline-link" style="text-decoration: none; color: black;">
+                                                    <p>Title: {{ review.review_text }}</p>
                                                     <p>Rate: {{ review.rate }}</p>
                                                     <p>Creator: {{ review.creator }}</p>
                                                     <p>Published: {{ review.pub_date }}</p>
@@ -44,48 +45,69 @@
                             </div>
                         {% endif %}
                         {% if user.is_authenticated %}
-                            <form method="POST" action="{% url 'create_review' %}">
-                                {% csrf_token %}
-                                {{ form.as_p }}
-                                <p class="text-muted" id="text_before">Don't see the category you're looking for? Create a new one:</p>
-                                <a onclick="add_category()" id="but_before" href="{% url 'create_category' %}" class="btn btn-outline-secondary">Create Category</a>
-                                <div id="category-form-container"></div>
-                                <button type="submit" class="btn btn-primary">Submit</button>
-                            </for
+                        <form method="POST" action="{% url 'create_review' %}">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="{{ form.review_text.id_for_label }}" class="my-label">Review Text:</label>
+                                {{ form.review_text|attr:"class:form-control my-class"|attr:"placeholder:Enter review text" }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.category.id_for_label }}" class="my-label">Category:</label>
+                                {{ form.category|attr:"class:form-control my-class"|attr:"placeholder:Enter category" }}
+                                <button type="button" class="btn btn-outline-secondary" onclick="addCategory()">Add Category</button>
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.description.id_for_label }}" class="my-label">Description:</label>
+                                {{ form.description|attr:"class:form-control my-class"|attr:"placeholder:Enter description" }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.rate.id_for_label }}" class="my-label">Rate:</label>
+                                <h5 class="text-muted">Enter a number between 1 (worst) and 5 (best).</h5>
+                                {{ form.rate|attr:"class:form-control my-class" }}
+                            </div>
                             
-                            m>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                        
                         {% endif %}
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+        <!-- </div>
+    </div> -->
 
     <script>
-        function add_category() {
-            var container = document.getElementById("category-form-container");
-            var text_before = document.getElementById("text_before");
-            var but_before = document.getElementById("but_before");
+        function addCategory() {
 
+            var html = '<div class="form-group mt-1" id="category-input">' +
+                '<input type="text" name="category" class="form-control my-class" placeholder="Enter category">' +
+                '</div>';
 
-            var formHTML = `
-                <form method="POST" action="{% url 'create_category' %}">
-                    {% csrf_token %}
-                    <div class="input-group mb-3">
-                        <input type="text" name="name" value="new category">
-                        <button type="submit" class="btn btn-outline-secondary">Add Category</button>
-                    </div>
-                </form>
-            `;
+            if (!document.querySelector('#category-input')) {
+                var addCategoryButton = document.querySelector('.btn.btn-outline-secondary');
 
-            // Set the form HTML to the container element
-            container.innerHTML = formHTML;
+                var newElement = document.createRange().createContextualFragment(html);
 
-            // Show the category folder
-            container.style.display = "block";
-            text_before.style.display = "none";
-            but_before.style.display = "none";
+                addCategoryButton.parentNode.insertBefore(newElement, addCategoryButton);
+            }
+            
+            var categoryName = document.querySelector('#category-input input').value;
+
+            if (categoryName) {
+                $.post("/create_category/", { name: categoryName })
+                    .done(function(data) {
+                        // alert("Category created successfully!");
+                        location.reload();
+                    })
+                    .fail(function(xhr, status, error) {
+                        alert("An error occurred: " + error);
+                    });
+            }
+
+            
         }
+
     </script>
+    
 
 {% endblock %}

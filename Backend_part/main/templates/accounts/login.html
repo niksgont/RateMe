@@ -1,0 +1,17 @@
+{% extends '../index_no_search.html' %}
+
+{% block content %}
+  <form method="post" class="itim-font">
+      {% csrf_token %}
+      <h2>Login</h2>
+      <div>
+        <label for="username">Username:</label>
+        <input type="text" name="username" required autofocus>
+      </div>
+      <div>
+        <label for="password">Password:</label>
+        <input type="password" name="password" required>
+      </div>
+      <button type="submit">Login</button>
+  </form>
+{% endblock %}
