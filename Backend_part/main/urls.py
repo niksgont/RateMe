@@ -53,6 +53,7 @@ urlpatterns = [
     path('review/<int:review_id>/', review_detail, name='review_detail'), # Review detail page
     path('review/<int:review_id>/add_review/', add_review, name='add_review'), # Add review page
     path('create_category/', create_category, name='create_category'), # Create category page
+    path('review/<int:review_id>/edit/', edit_review, name='edit_review'), # Edit review page
     path('get_categories/', get_categories, name='get_categories'), # Get categories page
     path('create_review/', create_review, name='create_review'), # Create review page
     path('categories/', all_categories, name='categorys'), # All categories page

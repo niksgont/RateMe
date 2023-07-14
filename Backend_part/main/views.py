@@ -529,3 +529,48 @@ def authors_view(request):
     HttpResponse: The HttpResponse object representing the HTTP response.
     """
     return render(request, 'authors.html')
+
+@login_required
+def edit_review(request, review_id):
+    """
+    This function handles both GET and POST requests for the page to edit a review.
+
+    Parameters:
+    request (HttpRequest): The Django HttpRequest object representing the HTTP request.
+    review_id (int): The ID of the review.
+
+    The function is decorated with the login_required decorator, so it requires the user to be authenticated.
+
+    If the HTTP method is GET:
+    - The review with the given ID is fetched from the database, raising a 404 error if no such review exists.
+    - A ReviewForm is instantiated with the review's data.
+    - The 'edit_review.html' template is rendered, with the review and the form passed in the context.
+
+    If the HTTP method is POST:
+    - The review with the given ID is fetched from the database, raising a 404 error if no such review exists.
+    - A ReviewForm is instantiated with the POST data and the review's data.
+    - The form's data is validated:
+        - If the form is valid:
+            - The form's data is saved to the review.
+            - The user is redirected to the review detail page of the review.
+        - If the form is not valid:
+            - The 'edit_review.html' template is rendered, with the review and the invalid form passed in the context.
+
+    Returns:
+    HttpResponse: The HttpResponse object representing the HTTP response.
+    """
+    review = get_object_or_404(Review, pk=review_id)
+
+    # Check if the user is the author of the review
+    if request.user != review.creator:
+        return redirect('main_page')  # Or wherever you want to redirect non-authors
+
+    if request.method == 'POST':
+        form = ReviewForm(request.POST, instance=review)
+        if form.is_valid():
+            form.save()
+            return redirect('review_detail', review_id=review_id)
+    else:
+        form = ReviewForm(instance=review)
+
+    return render(request, 'edit_review.html', {'form': form, 'review': review})
