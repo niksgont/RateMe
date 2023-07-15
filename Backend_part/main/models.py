@@ -51,6 +51,7 @@ class Review(models.Model):
     description = models.TextField()
     rate = models.IntegerField(default=0, validators=[validate_range])
     pub_date = models.DateTimeField("date published", auto_now_add=True)
+    updated_data = models.DateTimeField("date updated", auto_now=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='reviews')
     creator = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
     image = models.ImageField(upload_to='reviews/', null=True, blank=True)
